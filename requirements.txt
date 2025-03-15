@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+scikit-learn
+numpy
+joblib
+pydantic
+pytest
+flake8
+black
+isort
