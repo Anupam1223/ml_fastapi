@@ -11,7 +11,6 @@ venv:
 
 .PHONY: install
 install: venv
-	$(PIP) install -r requirements.txt
 
 .PHONY: run
 run:
