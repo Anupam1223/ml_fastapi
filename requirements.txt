@@ -8,6 +8,8 @@ pytest
 flake8
 black
 isort
+alembic
+locust
 
 # Database & ORM
 sqlalchemy

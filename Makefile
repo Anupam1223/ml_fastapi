@@ -4,7 +4,7 @@ PIP := $(venv)/Scripts/pip
 
 .PHONY: venv
 venv:
-	python3 -m venv $(venv)
+	$(PYTHON) -m venv $(venv)
 	$(PYTHON) -m pip install --upgrade pip
 	$(PIP) install -r requirements.txt
 
@@ -46,7 +46,7 @@ docker-run:
 
 .PHONY: docker-stop
 docker-stop:
-	docker-compose down  # Stop containers
+	docker-compose down
 
 .PHONY: docker-migrate
 docker-migrate:
