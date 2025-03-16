@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: ml_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: anupam
+      POSTGRES_DB: ml_fastapi
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: ml_api
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:anupam@db:5432/ml_fastapi
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port","8000", "--reload"]
+
+volumes:
+  pgdata:
