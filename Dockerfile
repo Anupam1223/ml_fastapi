@@ -17,7 +17,7 @@ COPY . .
 EXPOSE 8000
 
 # Set environment variables for database connection
-ENV DATABASE_URL=postgresql://user:password@db:5432/mydatabase
+ENV DATABASE_URL=postgresql://postgres:anupam@localhost:5432/ml_fastapi
 
 # Run database migrations before starting the server
-CMD alembic upgrade head && uvicorn app.infrastructure.entrypoints.api:app --host 0.0.0.0 --port 8000 --reload
+CMD alembic upgrade head && uvicorn app.main:app --reload

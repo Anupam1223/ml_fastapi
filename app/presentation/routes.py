@@ -1,19 +1,24 @@
-from fastapi import APIRouter, Depends
-from app.application.commands import SaveTimeSeriesData
-from app.application.queries import GetTimeSeriesData
-from app.infrastructure.unit_of_work import UnitOfWork
-from pydantic import BaseModel
 from datetime import datetime
 from typing import List
 
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+
+from app.application.commands import SaveTimeSeriesData
+from app.application.queries import GetTimeSeriesData
+from app.infrastructure.unit_of_work import UnitOfWork
+
 router = APIRouter()
+
 
 class TimeSeriesInput(BaseModel):
     timestamp: datetime
     value: float
 
+
 class BulkTimeSeriesInput(BaseModel):
     data: List[TimeSeriesInput]
+
 
 @router.post("/upload-data")
 def upload_data(payload: BulkTimeSeriesInput):
@@ -21,6 +26,7 @@ def upload_data(payload: BulkTimeSeriesInput):
     for item in payload.data:
         use_case.execute(item.timestamp, item.value)
     return {"message": "Data uploaded successfully"}
+
 
 @router.get("/get-data")
 def get_data():

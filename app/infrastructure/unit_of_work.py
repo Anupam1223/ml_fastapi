@@ -1,5 +1,6 @@
 from app.infrastructure.db import SessionLocal
 
+
 class UnitOfWork:
     def __enter__(self):
         self.session = SessionLocal()

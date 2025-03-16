@@ -4,6 +4,7 @@ PIP := $(venv)/Scripts/pip
 
 .PHONY: venv
 venv:
+	python3 -m venv $(venv)
 	$(PYTHON) -m pip install --upgrade pip
 	$(PIP) install -r requirements.txt
 
@@ -12,7 +13,7 @@ install: venv
 
 .PHONY: run
 run:
-	venv/Scripts/uvicorn app.infrastructure.entrypoints.api:app --host 0.0.0.0 --port 8000 --reload  # Windows/Linux
+	venv/Scripts/uvicorn app.main:app --reload
 
 .PHONY: format
 format:
@@ -33,7 +34,7 @@ migrate:
 
 .PHONY: makemigrations
 makemigrations:
-	alembic revision --autogenerate -m "new migration"  # Create new migration
+	alembic revision --autogenerate -m "new migration"
 
 .PHONY: docker-build
 docker-build:
@@ -41,7 +42,15 @@ docker-build:
 
 .PHONY: docker-run
 docker-run:
-	docker run --env-file .env -p 8000:8000 ml-api
+	docker-compose up --build -d
+
+.PHONY: docker-stop
+docker-stop:
+	docker-compose down  # Stop containers
+
+.PHONY: docker-migrate
+docker-migrate:
+	docker-compose exec api alembic upgrade head
 
 .PHONY: clean
 clean:
@@ -51,3 +60,11 @@ clean:
 reset-db:
 	rm -rf app/infrastructure/db/migrations
 	alembic init app/infrastructure/db/migrations
+
+.PHONY: docker-logs
+docker-logs:
+	docker-compose logs -f
+
+.PHONY: docker-restart
+docker-restart:
+	docker-compose restart  # Restart the services
