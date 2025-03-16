@@ -8,3 +8,16 @@ pytest
 flake8
 black
 isort
+
+# Database & ORM
+sqlalchemy
+psycopg2-binary
+
+# Data Processing
+pandas
+
+# Dependency Injection (Optional, for clean architecture)
+dependency-injector
+
+# Environment Variables
+python-dotenv
