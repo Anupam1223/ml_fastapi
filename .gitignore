@@ -1,6 +1,54 @@
-venv/
-__pycache__/
+# Python bytecode files
 *.pyc
 *.pyo
+__pycache__/
+
+# Virtual environment directories
+venv/
+env/
+.env/
+
+# IDE-specific files
+.idea/
+.vscode/
+*.iml
+
+# Docker files
+*.volume/
+*.db/
+
+# OS-specific files
 .DS_Store
-model.pkl
+Thumbs.db
+Desktop.ini
+
+# Log files
+*.log
+
+# Build artifacts
+*.egg-info/
+.eggs/
+*.whl
+*.tar.gz
+
+# Test coverage files
+.coverage
+*.hypothesis/
+*.pytest_cache/
+
+# Environment variables / sensitive data
+.env
+.env.local
+*.env.*
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Temporary system files
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# JetBrains IDE files
+.idea/
