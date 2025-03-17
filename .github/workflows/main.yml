@@ -16,9 +16,9 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: mydatabase
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: anupam
+          POSTGRES_DB: ml_fastapi
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -47,7 +47,7 @@ jobs:
 
     - name: Run tests
       env:
-        DATABASE_URL: postgresql://user:password@localhost:5432/mydatabase
+        DATABASE_URL: postgresql://postgres:anupam@localhost:5432/ml_fastapi
       run: |
         source venv/bin/activate
         pytest tests/
