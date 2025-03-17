@@ -67,4 +67,4 @@ docker-logs:
 
 .PHONY: docker-restart
 docker-restart:
-	docker-compose restart  # Restart the services
+	docker-compose restart
