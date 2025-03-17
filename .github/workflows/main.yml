@@ -39,11 +39,16 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Verify Installed Packages
+      run: |
+        source venv/bin/activate
+        pip list | grep black
+
     - name: Run linter
       run: |
-        python -m black --check .
-        python -m isort --check .
-        python -m flake8 .
+        black --check .
+        isort --check .
+        flake8 .
 
     - name: Run tests
       env:
