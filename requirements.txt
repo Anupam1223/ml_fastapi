@@ -10,6 +10,9 @@ black
 isort
 alembic
 locust
+kafka-python
+redis
+aiokafka
 
 # Database & ORM
 sqlalchemy
