@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgresql://postgres:anupam@db:5432/ml_fastapi
+      DATABASE_URL: postgresql://postgres:anupam@ml_db:5432/ml_fastapi
     ports:
       - "8000:8000"
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port","8000", "--reload"]

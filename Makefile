@@ -30,7 +30,7 @@ test:
 
 .PHONY: migrate
 migrate:
-	alembic upgrade head  # Apply migrations
+	alembic upgrade head
 
 .PHONY: makemigrations
 makemigrations:
