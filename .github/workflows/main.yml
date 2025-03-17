@@ -39,6 +39,11 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Run linter
+      run: |
+        source venv/bin/activate && python -m black --check . || true
+        source venv/bin/activate && python -m isort --check . || true
+
     - name: Run tests
       env:
         DATABASE_URL: postgresql://postgres:anupam@localhost:5432/ml_fastapi
