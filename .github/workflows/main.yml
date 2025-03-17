@@ -41,9 +41,9 @@ jobs:
 
     - name: Run linter
       run: |
-        black --check .
-        isort --check .
-        flake8 .
+        python -m black --check .
+        python -m isort --check .
+        python -m flake8 .
 
     - name: Run tests
       env:
