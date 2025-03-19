@@ -25,6 +25,7 @@ ANOMALY_THRESHOLD = 100.0
 @router.post("/upload-data")
 async def upload_data(payload: BulkTimeSeriesInput):
     """Uploads time series data, detects anomalies, and notifies WebSockets."""
+    print("here at upload data")
     use_case = SaveTimeSeriesData(UnitOfWork())
     
     for item in payload.data:
