@@ -1,6 +1,6 @@
 venv := venv
-PYTHON := $(venv)/Scripts/python.exe
-PIP := $(venv)/Scripts/pip
+PYTHON := $(venv)/Scripts/python.exe  # Update path for Unix if needed
+PIP := $(venv)/Scripts/pip            # Update path for Unix if needed
 
 .PHONY: venv
 venv:
@@ -22,7 +22,7 @@ format:
 
 .PHONY: lint
 lint:
-	flake8 .  
+	flake8 .
 
 .PHONY: test
 test:
@@ -50,6 +50,7 @@ docker-stop:
 
 .PHONY: docker-migrate
 docker-migrate:
+	docker-compose exec api alembic revision --autogenerate -m "Auto migration" || echo "No new migration"
 	docker-compose exec api alembic upgrade head
 
 .PHONY: clean
@@ -58,8 +59,11 @@ clean:
 
 .PHONY: reset-db
 reset-db:
-	rm -rf app/infrastructure/db/migrations
-	alembic init app/infrastructure/db/migrations
+	rm -rf app/alembic
+	rm -rf alembic.ini
+	docker-compose exec api alembic init app/infrastructure/db/migrations
+	docker-compose exec api alembic revision --autogenerate -m "Initial migration"
+	docker-compose exec api alembic upgrade head
 
 .PHONY: docker-logs
 docker-logs:
