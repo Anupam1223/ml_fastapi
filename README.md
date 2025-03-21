@@ -12,6 +12,7 @@ This project is a machine learning application built using FastAPI, a modern web
 - **Scalability**: Easily scalable for production use.
 - **Interactive Documentation**: Auto-generated Swagger UI and ReDoc.
 - **CI/CD pipeline**: This is backed up with deployable CI/CD
+- **Redis/Kafka/websockets**: Real time data integration for model training
 
 
 ## Requirements
