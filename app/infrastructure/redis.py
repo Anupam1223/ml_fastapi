@@ -12,7 +12,8 @@ redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
 async def cache_anomaly(data):
     """Cache anomaly in Redis and notify WebSockets."""
     redis_client.set(f"anomaly:{data['timestamp']}", json.dumps(data))
-    
+    """print what data is inside the redis client"""
+    print(redis_client.get(f"anomaly:{data['timestamp']}"))
     # Notify WebSocket clients
     await asyncio.create_task(send_anomaly_update(data))
 

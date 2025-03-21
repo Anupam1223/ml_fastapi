@@ -33,3 +33,7 @@ async def send_anomaly_update(data):
             disconnected_clients.add(connection)
             
     active_connections.difference_update(disconnected_clients)
+
+def get_active_websocket_connections():
+    """Returns the number of active WebSocket connections."""
+    return len(active_connections)
