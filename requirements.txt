@@ -13,6 +13,7 @@ locust
 kafka-python
 redis
 aiokafka
+pytest-xdist
 
 # Database & ORM
 sqlalchemy

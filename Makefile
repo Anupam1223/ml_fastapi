@@ -24,10 +24,6 @@ format:
 lint:
 	flake8 .
 
-.PHONY: test
-test:
-	pytest tests/
-
 .PHONY: migrate
 migrate:
 	alembic upgrade head
@@ -72,3 +68,7 @@ docker-logs:
 .PHONY: docker-restart
 docker-restart:
 	docker-compose restart
+
+.PHONY: test
+test:
+	pytest tests/
