@@ -10,6 +10,8 @@ from app.application.queries import GetTimeSeriesData
 from app.infrastructure.unit_of_work import UnitOfWork
 from app.infrastructure.redis import cache_anomaly
 from app.presentation.websockets import get_active_websocket_connections
+from app.domain.services import AnomalyDetector
+from app.domain.entities import TimeSeriesData
 
 router = APIRouter()
 
@@ -43,3 +45,14 @@ async def upload_data(payload: BulkTimeSeriesInput):
 async def get_active_connections():
     """Returns the number of currently connected WebSocket clients."""
     return {"active_connections": get_active_websocket_connections()}
+
+@router.post("/train-model")
+async def train_model(payload: BulkTimeSeriesInput):
+    """Trains the anomaly detection model with new data and caches it in Redis."""
+    detector = AnomalyDetector()  # Load or initialize the anomaly detector
+    data = [TimeSeriesData(timestamp=item.timestamp, value=item.value) for item in payload.data]
+    
+    # Train the model with the new data
+    detector.train(data)
+    
+    return {"message": "Model trained successfully"}
