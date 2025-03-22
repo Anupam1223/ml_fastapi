@@ -26,3 +26,7 @@ dependency-injector
 
 # Environment Variables
 python-dotenv
+
+
+# WebSockets Support
+websockets
