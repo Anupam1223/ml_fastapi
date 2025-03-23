@@ -26,6 +26,8 @@ services:
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port","8000", "--reload"]
     volumes:
       - ./app/models:/app/models
+      - ./app/alembic:/app/alembic
+      - ./app/alembic.ini:/app/alembic.ini  
 
 
   redis:
