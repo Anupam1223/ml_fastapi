@@ -1,6 +1,6 @@
 # ML FastAPI Project
 
-This project is a machine learning application built using FastAPI, a modern web framework for building APIs with Python. The application serves machine learning models via RESTful APIs, enabling seamless integration with other systems.
+This project is a real-time anomaly detection system built using FastAPI, designed to detect anomalies in time-series data. It automatically trains a machine learning model if one doesn’t exist and serves predictions via RESTful APIs or WebSockets. The system processes streaming data, detects anomalies in real time, and dynamically updates the model when needed. Redis is used for model caching, while Kafka (or WebSockets) enables real-time data ingestion. The system ensures seamless integration with other applications through its API endpoints.
 
 ## Features
 
