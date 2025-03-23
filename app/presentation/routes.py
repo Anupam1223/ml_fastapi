@@ -1,18 +1,18 @@
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
-import asyncio
 
 from app.application.commands import SaveTimeSeriesData
-from app.application.queries import GetTimeSeriesData
 from app.infrastructure.unit_of_work import UnitOfWork
-from app.infrastructure.redis import cache_anomaly
 from app.presentation.websockets import get_active_websocket_connections
 from app.domain.services import AnomalyDetector
 from app.domain.entities import TimeSeriesData
 import joblib
+import os
+import pandas as pd
+import io
 
 router = APIRouter()
 
@@ -23,25 +23,42 @@ class TimeSeriesInput(BaseModel):
 class BulkTimeSeriesInput(BaseModel):
     data: List[TimeSeriesInput]
 
-# Basic anomaly detection: If value > threshold, it's an anomaly
-ANOMALY_THRESHOLD = 100.0
 detector = AnomalyDetector()  # Initialize anomaly detector
+# Ensure "models" directory exists
+MODEL_DIR = "models"
+MODEL_FILE_PATH = os.path.join(MODEL_DIR, "anomaly_model.pkl")
+os.makedirs(MODEL_DIR, exist_ok=True)
 
 @router.post("/upload-data")
-async def upload_data(payload: BulkTimeSeriesInput):
-    """Uploads time series data, detects anomalies, and notifies WebSockets."""
-    use_case = SaveTimeSeriesData(UnitOfWork())
-    for item in payload.data:
-        use_case.execute(item.timestamp, item.value)
+async def upload_data(file: UploadFile = File(...)):
+
+    # Read CSV file into Pandas DataFrame
+    df = pd.read_csv(io.BytesIO(await file.read()))
+    # Ensure correct column names
+    if not {"timestamp", "value"}.issubset(df.columns):
+        return {"error": "CSV must contain 'timestamp' and 'value' columns"}
     
-    # Step 2: Train the anomaly detection model
-    detector.train(payload.data)  # Train the model with new data
+    # Convert timestamp column to datetime
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
 
-    # Step 3: Persist the trained model to a file
-    model_file_path = "models/anomaly_model.pkl"
-    joblib.dump(detector.model, model_file_path)
+    # Convert DataFrame to list of TimeSeriesData
+    time_series_data = [
+        TimeSeriesData(timestamp=row["timestamp"], value=row["value"])
+        for _, row in df.iterrows()
+    ]
 
-    return {"message": "Data uploaded successfully"}
+    """Uploads time series data, detects anomalies, and notifies WebSockets."""
+    # Store data in database
+    use_case = SaveTimeSeriesData(UnitOfWork())
+    for data in time_series_data:
+        use_case.execute(data.timestamp, data.value)
+    
+    # Train anomaly detector
+    detector.train(time_series_data)
+
+    joblib.dump(detector.model, MODEL_FILE_PATH) 
+
+    return {"message": f"Data uploaded, saved in DB, and model trained with {len(df)} data points."}
 
 @router.post("/predict-anomaly")
 async def predict_anomaly(payload: TimeSeriesInput):
