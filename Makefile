@@ -1,6 +1,6 @@
 venv := venv
-PYTHON := $(venv)/Scripts/python.exe  # Update path for Unix if needed
-PIP := $(venv)/Scripts/pip            # Update path for Unix if needed
+PYTHON := $(venv)/Scripts/python.exe  
+PIP := $(venv)/Scripts/pip            
 
 .PHONY: venv
 venv:
@@ -38,7 +38,7 @@ docker-build:
 
 .PHONY: docker-run
 docker-run:
-	docker-compose up --build -d
+	docker-compose up -d
 
 .PHONY: docker-stop
 docker-stop:

@@ -14,6 +14,8 @@ import os
 import pandas as pd
 import io
 from app.infrastructure.redis import cache_anomaly
+from app.infrastructure.redis import redis_client
+import json
 
 router = APIRouter()
 
@@ -64,6 +66,18 @@ async def upload_data(file: UploadFile = File(...)):
 @router.post("/predict-anomaly")
 async def predict_anomaly(payload: TimeSeriesInput):
     """Predicts if a time series data point is an anomaly using the loaded model."""
+    # Check if model exists in Redis
+    model_in_redis = redis_client.get("anomaly_model")
+
+    if not model_in_redis:
+        # Try loading from disk
+        if os.path.exists(MODEL_FILE_PATH):
+            loaded_model = joblib.load(MODEL_FILE_PATH)
+            detector.model = loaded_model
+            redis_client.set("anomaly_model", json.dumps(True))  # Mark model as loaded in Redis
+            print("Model loaded from disk and stored in Redis.")
+        else:
+            return {"error": "No trained model found. Please upload data first using `/upload-data`."}
 
     # Create the TimeSeriesData object from the payload
     data = TimeSeriesData(timestamp=payload.timestamp, value=payload.value)
@@ -81,7 +95,7 @@ async def predict_anomaly(payload: TimeSeriesInput):
         
         # Cache anomaly in Redis and notify WebSockets
         await cache_anomaly(anomaly_data)
-        
+
     return {
         "timestamp": anomaly.timestamp,
         "value": anomaly.value,
