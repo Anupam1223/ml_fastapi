@@ -13,6 +13,7 @@ import joblib
 import os
 import pandas as pd
 import io
+from app.infrastructure.redis import cache_anomaly
 
 router = APIRouter()
 
@@ -70,7 +71,17 @@ async def predict_anomaly(payload: TimeSeriesInput):
     # Use the detector to predict if it's an anomaly
     anomaly = detector.predict(data)
 
-    # Return the anomaly result
+    # If an anomaly is detected, store in Redis and notify WebSockets
+    if anomaly.is_anomaly:
+        anomaly_data = {
+            "timestamp": str(anomaly.timestamp),
+            "value": anomaly.value,
+            "is_anomaly": anomaly.is_anomaly
+        }
+        
+        # Cache anomaly in Redis and notify WebSockets
+        await cache_anomaly(anomaly_data)
+        
     return {
         "timestamp": anomaly.timestamp,
         "value": anomaly.value,
