@@ -16,8 +16,8 @@ COPY . .
 # Expose application port
 EXPOSE 8000
 
-# Set environment variables for database connection
-ENV DATABASE_URL=postgresql://postgres:anupam@ml_db:5432/ml_fastapi
+# Copy the .env file into the container
+COPY .env .env
 
 # Run database migrations before starting the server
 CMD alembic upgrade head && uvicorn app.main:app --reload
