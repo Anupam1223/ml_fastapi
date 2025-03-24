@@ -29,6 +29,15 @@ services:
       - ./app/alembic:/app/alembic
       - ./app/alembic.ini:/app/alembic.ini  
 
+  nginx:
+    image: nginx:latest
+    container_name: ml_nginx
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
 
   redis:
     image: redis:latest
