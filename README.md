@@ -13,6 +13,7 @@ This project is a real-time anomaly detection system built using FastAPI, design
 - **Interactive Documentation**: Auto-generated Swagger UI and ReDoc.
 - **CI/CD pipeline**: This is backed up with deployable CI/CD
 - **Redis/Kafka/websockets**: Real time data integration for model training
+- - **Nginx**: Reverse Proxxy
 
 
 ## Requirements
