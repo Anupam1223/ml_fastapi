@@ -16,6 +16,7 @@ import io
 from app.infrastructure.redis import cache_anomaly
 from app.infrastructure.redis import redis_client
 import json
+from app.infrastructure.kafka import producer, TOPIC
 
 router = APIRouter()
 
@@ -106,3 +107,10 @@ async def predict_anomaly(payload: TimeSeriesInput):
 async def get_active_connections():
     """Returns the number of currently connected WebSocket clients."""
     return {"active_connections": get_active_websocket_connections()}
+
+@router.post("/stream-data/")
+async def stream_data(payload: TimeSeriesInput):
+    """Sends real-time data to Kafka for anomaly detection."""
+    data = {"timestamp": str(payload.timestamp), "value": payload.value}
+    producer.send(TOPIC, data)
+    return {"message": "Data sent to Kafka", "data": data}
