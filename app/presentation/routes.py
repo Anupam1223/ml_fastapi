@@ -113,4 +113,4 @@ async def stream_data(payload: TimeSeriesInput):
     """Sends real-time data to Kafka for anomaly detection."""
     data = {"timestamp": str(payload.timestamp), "value": payload.value}
     kafka.producer.send(kafka.TOPIC, data)
-    return {"message": "Data sent to Kafka", "data": data}
+    

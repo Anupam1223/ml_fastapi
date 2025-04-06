@@ -65,13 +65,13 @@ async def consume_messages(callback):
 
             if anomaly.is_anomaly:
                 print(f"Anomaly Detected: {anomaly}")
-                await send_anomaly_update({
+                anomaly_data = {
                     "timestamp": str(anomaly.timestamp),
                     "value": anomaly.value,
                     "is_anomaly": anomaly.is_anomaly
-                })
+                }
 
-                        # Cache anomaly in Redis and notify WebSockets
-                await cache_anomaly(anomaly)
+                # Cache anomaly in Redis and notify WebSockets
+                await cache_anomaly(anomaly_data)
     finally:
         await consumer.stop()
