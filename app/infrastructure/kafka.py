@@ -8,17 +8,32 @@ from app.infrastructure.redis import redis_client
 import os
 from app.domain.entities import TimeSeriesData
 from app.infrastructure.redis import cache_anomaly
+import time
+from kafka.errors import NoBrokersAvailable
 
 KAFKA_BROKER = "ml_kafka:9092"
 TOPIC = "anomaly_detection"
 MODEL_FILE_PATH = "models/anomaly_model.pkl"
 
 detector = AnomalyDetector()
+producer = None
 
-producer = KafkaProducer(
-    bootstrap_servers=KAFKA_BROKER,
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
-)
+def init_kafka_producer(retries=10, delay=5):
+    global producer
+    for attempt in range(1, retries + 1):
+        try:
+            print(f"Attempt {attempt}: Connecting to Kafka at {KAFKA_BROKER}...")
+            producer = KafkaProducer(
+                bootstrap_servers=KAFKA_BROKER,
+                value_serializer=lambda v: json.dumps(v).encode('utf-8')
+            )
+            print("Kafka Producer connected.")
+            break
+        except NoBrokersAvailable as e:
+            print(f"Kafka not available (attempt {attempt}). Retrying in {delay}s...")
+            time.sleep(delay)
+    else:
+        raise RuntimeError("Kafka broker not available after retries.")
 
 async def consume_messages(callback):
     """Consumes Kafka messages asynchronously and triggers callback."""
