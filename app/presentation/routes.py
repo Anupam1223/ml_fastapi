@@ -64,45 +64,6 @@ async def upload_data(file: UploadFile = File(...)):
 
     return {"message": f"Data uploaded, saved in DB, and model trained with {len(df)} data points."}
 
-@router.post("/predict-anomaly")
-async def predict_anomaly(payload: TimeSeriesInput):
-    """Predicts if a time series data point is an anomaly using the loaded model."""
-    # Check if model exists in Redis
-    model_in_redis = redis_client.get("anomaly_model")
-
-    if not model_in_redis:
-        # Try loading from disk
-        if os.path.exists(MODEL_FILE_PATH):
-            loaded_model = joblib.load(MODEL_FILE_PATH)
-            detector.model = loaded_model
-            redis_client.set("anomaly_model", json.dumps(True))  # Mark model as loaded in Redis
-            print("Model loaded from disk and stored in Redis.")
-        else:
-            return {"error": "No trained model found. Please upload data first using `/upload-data`."}
-
-    # Create the TimeSeriesData object from the payload
-    data = TimeSeriesData(timestamp=payload.timestamp, value=payload.value)
-    
-    # Use the detector to predict if it's an anomaly
-    anomaly = detector.predict(data)
-
-    # If an anomaly is detected, store in Redis and notify WebSockets
-    if anomaly.is_anomaly:
-        anomaly_data = {
-            "timestamp": str(anomaly.timestamp),
-            "value": anomaly.value,
-            "is_anomaly": anomaly.is_anomaly
-        }
-        
-        # Cache anomaly in Redis and notify WebSockets
-        await cache_anomaly(anomaly_data)
-
-    return {
-        "timestamp": anomaly.timestamp,
-        "value": anomaly.value,
-        "is_anomaly": anomaly.is_anomaly
-    }
-
 @router.get("/ws/active_connections")
 async def get_active_connections():
     """Returns the number of currently connected WebSocket clients."""
