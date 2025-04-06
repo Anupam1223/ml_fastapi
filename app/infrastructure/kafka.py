@@ -34,6 +34,9 @@ def init_kafka_producer(retries=10, delay=5):
             time.sleep(delay)
     else:
         raise RuntimeError("Kafka broker not available after retries.")
+    
+def get_kafka_producer():
+    return producer
 
 async def consume_messages(callback):
     """Consumes Kafka messages asynchronously and triggers callback."""
