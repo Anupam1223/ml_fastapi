@@ -8,7 +8,7 @@ services:
     env_file: 
       - .env
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -21,8 +21,8 @@ services:
     env_file: 
       - .env
     ports:
-      - "8000:8000"
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port","8000", "--reload"]
+      - "${API_PORT}:${API_PORT}"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${API_PORT}", "--reload"]
     volumes:
       - ./app/models:/app/models
       - ./app/alembic:/app/alembic
@@ -43,17 +43,17 @@ services:
     container_name: ml_redis
     restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: ml_zookeeper
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_PORT}
     ports:
-      - "2181:2181"
+      - "${ZOOKEEPER_PORT}:${ZOOKEEPER_PORT}"
     healthcheck:
-      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181"]
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "${ZOOKEEPER_PORT}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -66,18 +66,35 @@ services:
         condition: service_healthy
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: ml_zookeeper:2181
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://ml_kafka:9092
+      KAFKA_ZOOKEEPER_CONNECT: ml_zookeeper:${ZOOKEEPER_PORT}
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_PORT}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://ml_kafka:${KAFKA_PORT}
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
-      - "9092:9092"
+      - "${KAFKA_PORT}:${KAFKA_PORT}"
     healthcheck:
-      test: ["CMD", "kafka-topics", "--bootstrap-server", "ml_kafka:9092", "--list"]
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "ml_kafka:${KAFKA_PORT}", "--list"]
       interval: 10s
       timeout: 5s
       retries: 5
       
+  prometheus:
+    image: prom/prometheus
+    container_name: ml_prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+
+  grafana:
+    image: grafana/grafana
+    container_name: ml_grafana
+    ports:
+      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
 volumes:
   pgdata:
+  grafana-storage:

@@ -32,3 +32,6 @@ python-dotenv
 
 # WebSockets Support
 websockets
+
+# Monitoring
+prometheus-fastapi-instrumentator

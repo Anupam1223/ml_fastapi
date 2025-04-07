@@ -5,6 +5,7 @@ from app.presentation.websockets import router as ws_router
 from app.infrastructure.kafka import init_kafka_producer
 import asyncio
 from app.infrastructure.kafka import consume_messages
+from prometheus_fastapi_instrumentator import Instrumentator
 
 
 app = FastAPI()
@@ -29,3 +30,5 @@ async def start_kafka_consumer():
         loop = asyncio.get_event_loop()
         loop.create_task(consume_messages(callback=None))
         consumer_started = True
+    
+Instrumentator().instrument(app).expose(app)
