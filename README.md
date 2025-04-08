@@ -14,7 +14,7 @@ This project is a real-time anomaly detection system built using FastAPI, design
 - **CI/CD pipeline**: This is backed up with deployable CI/CD
 - **Redis/Kafka/websockets**: Real time data integration for model training
 - **Nginx**: Reverse Proxxy
-- **Grafana**: Visualize Real-Time Metrics from FastAPI
+- **Grafana/Prometheus**: Visualize Real-Time Metrics from FastAPI
 
 ## Requirements
 
