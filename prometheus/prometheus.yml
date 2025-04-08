@@ -6,3 +6,6 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['ml_api:8000'] # If running FastAPI inside Docker
+
+rule_files:
+  - "alerts.yml"

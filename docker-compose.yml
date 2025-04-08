@@ -83,7 +83,8 @@ services:
     image: prom/prometheus
     container_name: ml_prometheus
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
     ports:
       - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
 

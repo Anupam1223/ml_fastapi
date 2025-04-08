@@ -1,0 +1,20 @@
+groups:
+- name: fastapi-alerts
+  rules:
+  - alert: HighActiveWebsockets
+    expr: websocket_connections_total  > 10
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "Too many WebSocket connections"
+      description: "Active WebSocket connections are above 10 for 30s."
+
+  - alert: FrequentAnomalies
+    expr: rate(anomalies_detected_total[1m]) > 5
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High anomaly detection rate"
+      description: "More than 5 anomalies detected per minute."
