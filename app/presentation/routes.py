@@ -13,9 +13,6 @@ import joblib
 import os
 import pandas as pd
 import io
-from app.infrastructure.redis import cache_anomaly
-from app.infrastructure.redis import redis_client
-import json
 from app.infrastructure import kafka
 
 router = APIRouter()

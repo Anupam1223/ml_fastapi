@@ -4,4 +4,4 @@ global:
 scrape_configs:
   - job_name: 'ml_fastapi'
     static_configs:
-      - targets: ['host.docker.internal:8000']  # If running FastAPI inside Docker
+      - targets: ['ml_api:8000'] # If running FastAPI inside Docker

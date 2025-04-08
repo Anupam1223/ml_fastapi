@@ -2,7 +2,6 @@ from kafka import KafkaProducer
 import json
 import joblib
 from aiokafka import AIOKafkaConsumer
-from app.presentation.websockets import send_anomaly_update
 from app.domain.services import AnomalyDetector
 from app.infrastructure.redis import redis_client
 import os
