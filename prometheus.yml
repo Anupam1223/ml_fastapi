@@ -3,5 +3,6 @@ global:
 
 scrape_configs:
   - job_name: 'ml_fastapi'
+    scrape_interval: 5s
     static_configs:
       - targets: ['ml_api:8000'] # If running FastAPI inside Docker
