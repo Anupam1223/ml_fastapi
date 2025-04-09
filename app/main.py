@@ -47,7 +47,9 @@ consumer_started = False
 def anomaly_callback(data: dict):
     try:
         parsed = data if isinstance(data, dict) else json.loads(data)
+        print("[CALLBACK DATA]", parsed)
         if parsed.get("is_anomaly"):
+            print("[METRIC] Incrementing anomaly counter")
             anomaly_counter.inc()
             last_anomaly_value.set(parsed.get("value", 0.0))
     except Exception as e:
@@ -58,7 +60,7 @@ async def start_kafka_consumer():
     global consumer_started
     if not consumer_started:
         loop = asyncio.get_event_loop()
-        loop.create_task(consume_messages(callback=None))
+        loop.create_task(consume_messages(callback=anomaly_callback))
         consumer_started = True
     
 Instrumentator().instrument(app).expose(app)

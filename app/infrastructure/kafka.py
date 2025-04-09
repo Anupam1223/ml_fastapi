@@ -72,5 +72,7 @@ async def consume_messages(callback):
 
                 # Cache anomaly in Redis and notify WebSockets
                 await cache_anomaly(anomaly_data)
+                if callback:
+                    callback(anomaly_data)
     finally:
         await consumer.stop()
