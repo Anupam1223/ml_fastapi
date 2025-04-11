@@ -11,6 +11,7 @@ import time
 from kafka.errors import NoBrokersAvailable
 from app.application.commands import SaveTimeSeriesData
 from app.infrastructure.unit_of_work import UnitOfWork
+from io import BytesIO
 
 
 KAFKA_BROKER = "ml_kafka:9092"
@@ -65,6 +66,11 @@ async def consume_messages(callback):
                     detector.model = joblib.load(MODEL_FILE_PATH)
                     redis_client.set("anomaly_model", json.dumps(True))
                     print("Model loaded.")
+            else:
+                model_bytes = redis_client.get("anomaly_model")
+                model_buffer = BytesIO(model_bytes)
+                detector.model = joblib.load(model_buffer)
+                print("Model loaded from Redis.")
 
             # Predict anomaly
             time_series_data = TimeSeriesData(timestamp=data["timestamp"], value=data["value"])
