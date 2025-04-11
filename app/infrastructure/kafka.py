@@ -9,6 +9,9 @@ from app.domain.entities import TimeSeriesData
 from app.infrastructure.redis import cache_anomaly
 import time
 from kafka.errors import NoBrokersAvailable
+from app.application.commands import SaveTimeSeriesData
+from app.infrastructure.unit_of_work import UnitOfWork
+
 
 KAFKA_BROKER = "ml_kafka:9092"
 TOPIC = "anomaly_detection"
@@ -50,6 +53,11 @@ async def consume_messages(callback):
         async for msg in consumer:
             data = msg.value
             print(f"Received Data: {data}")
+
+            #NEW: Save to database
+            time_series_data = TimeSeriesData(timestamp=data["timestamp"], value=data["value"])
+            use_case = SaveTimeSeriesData(UnitOfWork())
+            use_case.execute(time_series_data.timestamp, time_series_data.value)
 
             # Load model if not already in memory
             if not redis_client.get("anomaly_model"):
