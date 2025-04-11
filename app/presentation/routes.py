@@ -14,6 +14,8 @@ import os
 import pandas as pd
 import io
 from app.infrastructure import kafka
+from app.infrastructure.model_version_manager import get_next_model_version
+
 
 router = APIRouter()
 
@@ -57,9 +59,15 @@ async def upload_data(file: UploadFile = File(...)):
     # Train anomaly detector
     detector.train(time_series_data)
 
-    joblib.dump(detector.model, MODEL_FILE_PATH) 
+    # Version the model
+    version = get_next_model_version()
+    model_path = os.path.join(MODEL_DIR, f"anomaly_model_v{version}.pkl")
+    joblib.dump(detector.model, model_path)
 
-    return {"message": f"Data uploaded, saved in DB, and model trained with {len(df)} data points."}
+    return {
+        "message": f"Data uploaded and model v{version} trained with {len(df)} data points.",
+        "model_version": version
+    }
 
 @router.get("/ws/active_connections")
 async def get_active_connections():
