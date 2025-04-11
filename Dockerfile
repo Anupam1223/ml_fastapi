@@ -16,8 +16,5 @@ COPY . .
 # Expose application port
 EXPOSE 8000
 
-# Copy the .env file into the container
-COPY .env .env
-
 # Run database migrations before starting the server
-CMD alembic upgrade head && uvicorn app.main:app --reload
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
